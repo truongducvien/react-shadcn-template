@@ -39,6 +39,7 @@ export default tseslint.config(
         1,
         {
           groups: ['builtin', 'external', 'internal', 'parent', 'index', 'object', 'type'],
+          pathGroupsExcludedImportTypes: [],
         },
       ],
       'no-extra-boolean-cast': 0,

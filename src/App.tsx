@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './App.css';
 import queryClient from './config/react-query';
-import { AuthProvider } from './contexts';
+import { AuthProvider, SideBarProvider } from './contexts';
 import AppRouter from './router';
 
 function App() {
@@ -11,7 +11,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
-          <AppRouter />
+          <SideBarProvider>
+            <AppRouter />
+          </SideBarProvider>
         </BrowserRouter>
       </AuthProvider>
     </QueryClientProvider>

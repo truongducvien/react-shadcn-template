@@ -1,4 +1,4 @@
-import { HTMLAttributes, ReactNode } from 'react';
+import { ReactNode, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import Dot from '@/assets/icons/Dot';
@@ -7,54 +7,91 @@ import { cn } from '@/lib/utils';
 
 interface MenuItemProps {
   label: string;
+  renderLabel?: (className?: string) => ReactNode;
+  showIcon?: boolean;
   icon?: ReactNode;
+  activeIcon?: ReactNode;
   href?: string;
   isSubItem?: boolean;
   isActive?: boolean;
   onClick?: () => void;
-  className?: HTMLAttributes<HTMLDivElement>['className'];
+  className?: string;
+  activeClassName?: string;
+  showConnectorLine?: boolean;
 }
+
+const defaultIcon = <Dot />;
+const defaultActiveIcon = <Dot r={4} />;
 
 export const MenuItem = ({
   label,
+  renderLabel,
+  showIcon = true,
   icon,
+  activeIcon,
   href,
   isSubItem = false,
   isActive = false,
   onClick,
   className,
+  activeClassName,
+  showConnectorLine,
 }: MenuItemProps) => {
-  if (href) {
+  const renderIcon = useCallback(() => {
+    if (!showIcon) return;
+    if (!icon) return isActive ? defaultActiveIcon : defaultIcon;
+    if (isActive && activeIcon) return activeIcon;
+    return icon;
+  }, [showIcon, icon, activeIcon, isActive]);
+
+  const baseClassName = cn(
+    'flex justify-start gap-2 w-full text-sm font-medium px-4 py-2 rounded-md',
+    'transition-all duration-200',
+    isActive && 'bg-platinum',
+    isSubItem ? 'relative bg-unset hover:font-bold' : 'hover:bg-platinum',
+    isActive && isSubItem && 'font-bold'
+  );
+
+  const Comp = href ? Link : Button;
+
+  if (renderLabel) {
     return (
-      <Button onClick={onClick} asChild variant={'ghost'} className="p-2">
-        <Link
-          to={href}
-          className={cn(
-            'flex gap-1 justify-start w-full',
-            isSubItem ? 'hover:font-bold' : 'hover:bg-platinum',
-            'transition-all duration-200',
-            { 'bg-platinum': isActive && !isSubItem },
-            className
-          )}
-        >
-          {!!icon ? icon : isSubItem ? <Dot r={isActive ? 4 : undefined} /> : null}
-          <span className={cn({ 'font-bold': isActive && isSubItem })}>{label}</span>
-        </Link>
-      </Button>
+      <div onClick={onClick} className="relative cursor-pointer">
+        {showConnectorLine && <AnchorLine />}
+        {renderLabel(isActive ? activeClassName : className)}
+      </div>
     );
   }
 
   return (
-    <Button
+    <Comp
+      to={href || ''}
+      onClick={onClick}
       variant={'ghost'}
-      className={cn(
-        'flex justify-between hover:bg-platinum w-full',
-        'transition-all duration-200',
-        { 'bg-platinum': isActive },
-        className
-      )}
+      className={cn(baseClassName, className, isActive && activeClassName)}
     >
-      <span>{label}</span>
-    </Button>
+      {showConnectorLine && <AnchorLine />}
+      {renderIcon()}
+      <span className={cn({ 'font-bold': isActive && isSubItem })}>{label}</span>
+    </Comp>
   );
 };
+
+const AnchorLine = () => (
+  <svg
+    width="15px"
+    height="100px"
+    viewBox="0 0 15 100"
+    fill="none"
+    className="absolute bottom-[calc(50%_-_2px)] right-[100%]"
+  >
+    <path
+      d="M1 1 L1 89 Q1,98 11,98 L13 98"
+      strokeWidth="2"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="stroke-platinum"
+    />
+  </svg>
+);

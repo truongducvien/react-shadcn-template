@@ -1,17 +1,28 @@
-import { HTMLAttributes } from 'react';
-
-import { useSideBarContext } from '@/hooks/context-hooks';
 import { cn } from '@/lib/utils';
 
 import { CollapsibleMenu } from './CollapsibleMenu';
 import { MenuItem } from './MenuItem';
+import { IMenuItem } from './types';
 
 interface SideBarProps {
-  className?: HTMLAttributes<HTMLDivElement>['className'];
+  menuList: IMenuItem[];
+  openKeys: string[];
+  activeKeys: string[];
+  onToggleOpen?: (key: string) => void;
+  onActive?: (keys: string[]) => void;
+  className?: string;
+  showConnectorLine?: boolean;
 }
 
-export const SideBar = ({ className }: SideBarProps) => {
-  const { menuList, openKeys, activeKeys, onToggleOpen, onActive } = useSideBarContext();
+export const SideBar = ({
+  menuList,
+  openKeys,
+  activeKeys,
+  onToggleOpen,
+  onActive,
+  className,
+  showConnectorLine,
+}: SideBarProps) => {
   if (!menuList.length) return;
 
   return (
@@ -19,34 +30,34 @@ export const SideBar = ({ className }: SideBarProps) => {
       {menuList.map((item) =>
         !!item.children?.length ? (
           <CollapsibleMenu
-            key={item.key}
-            icon={item.icon}
-            label={item.label}
+            activeIcon={item.activeIcon || item.icon}
             isOpen={openKeys?.includes(item.key)}
             isActive={activeKeys?.includes(item.key)}
-            onClick={() => onToggleOpen(item.key)}
+            onClick={() => onToggleOpen?.(item.key)}
+            className={item.className}
+            activeClassName={item.activeClassName}
+            {...item}
+            key={item.key}
           >
             {!!item.children?.length &&
               item.children?.map((it) => (
                 <MenuItem
-                  key={it.key}
-                  icon={it.icon}
-                  label={it.label}
-                  href={it.href}
+                  activeIcon={it.activeIcon || it.icon}
                   isSubItem
                   isActive={activeKeys?.includes(it.key)}
                   onClick={() => onActive?.([item.key, it.key])}
+                  showConnectorLine={showConnectorLine}
+                  {...it}
+                  key={it.key}
                 />
               ))}
           </CollapsibleMenu>
         ) : (
           <MenuItem
-            key={item.key}
-            icon={item.icon}
-            label={item.label}
-            href={item.href}
             isActive={activeKeys?.includes(item.key)}
-            onClick={() => onActive([item.key])}
+            onClick={() => onActive?.([item.key])}
+            {...item}
+            key={item.key}
           />
         )
       )}

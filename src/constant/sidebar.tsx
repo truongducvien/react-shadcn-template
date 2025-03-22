@@ -9,8 +9,22 @@ export const menuList: IMenuItem[] = [
     label: 'Posts',
     icon: <PostIcon />,
     children: [
-      { key: 'new', label: 'New Post', href: '/posts/new' },
-      { key: 'all-post', label: 'All Posts', href: '/posts' },
+      {
+        key: 'new',
+        label: 'New Post',
+        href: '/posts/new',
+        showIcon: false,
+        className: 'hover:bg-platinum',
+        activeClassName: 'bg-platinum',
+      },
+      {
+        key: 'all-post',
+        label: 'All Posts',
+        href: '/posts',
+        showIcon: false,
+        className: 'hover:bg-platinum',
+        activeClassName: 'bg-platinum',
+      },
     ],
   },
   {

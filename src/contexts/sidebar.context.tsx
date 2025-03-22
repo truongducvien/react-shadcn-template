@@ -77,7 +77,7 @@ const SideBarProvider = ({ children }: Props) => {
   useEffect(() => {
     // Initial sidebar's status
     const keys = findKeysByPath(menuList, location.pathname);
-    !!keys?.key && setActiveKeys([keys.key]);
+    !!keys?.key && setActiveKeys(() => (keys.parentKey ? [keys.key, keys.parentKey] : [keys.key]));
     !!keys?.parentKey &&
       setOpenKeys((prev) =>
         !prev.includes(keys.parentKey as string) ? [...prev, keys.parentKey as string] : prev
